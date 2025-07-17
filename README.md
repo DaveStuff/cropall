@@ -1,5 +1,16 @@
 # cropall
 
+This version of cropall differs from the original source (pknowles/cropall:main) by adding an option to append a suffix to the output file.
+
+Appending a suffix eases workflow and increases data safety by: 
+1. Making it easier to distinguish cropped images from the originals by file name alone.
+2. Allowing output images to be saved in the same folder as input images, without clobbering the input file. This was not possible in the previous version.
+3. Proecting the original file. Destruction of the input file is made impossible by removing any possibility of an accidental overwrite.
+
+NOTE: This feature is disabled by default. It can be enabled by changing the config file entry "append_suffix" from False to True. The default suffix is "-crop"; it can be changed by editing the value of "output_suffix" in the config file.
+
+------------------------------------------------------------------------------------------------------------------------------------------------------
+
 A small cross-platform python script to interactively crop and resize lots of
 images images quickly. Image editors like gimp take way too long to start, open
 an image, crop it, export it. A batch job/script can automate it but everything
@@ -74,20 +85,6 @@ sudo dnf install ImageMagick-devel
 # Optional: create the standalone binary distribution
 pyinstaller cropall.spec
 ```
-
-Feel free to report issues and post ideas. Pull requests are most welcome, thank
-you! I can't promise I'll get to them immediately but I'm grateful for your time
-to improve the app 😊.
-
-## Forks and alternatives
-
-- [@rystraum](https://github.com/rystraum/cropall) has added a number of
-  features such as rotation and keyboard shortcuts. See
-  [#2](https://github.com/pknowles/cropall/issues/2).
-- There's a great list of alternatives here:
-  https://askubuntu.com/questions/97695/is-there-a-lightweight-tool-to-crop-images-quickly
-- E.g.: https://github.com/weclaw1/inbac
-
 ## License
 
 The python source code here is under GPL v3.
