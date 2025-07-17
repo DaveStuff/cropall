@@ -38,7 +38,9 @@ class Cropper:
             )
         return True
 
-    def resize(self, src_file, dst_file):
+    def resize(self, src_file, dst_folder):
+        output_filename = self.get_output_filename(src_file, self.config)
+        dst_file = os.path.join(dst_folder, output_filename)
         if not self.can_replace(dst_file):
             return False
         with wand.image.Image(filename=src_file) as img:
@@ -51,7 +53,9 @@ class Cropper:
             img.save(filename=dst_file)
         return True
 
-    def crop(self, src_file, dst_file, box):
+    def crop(self, src_file, dst_folder, box):
+        output_filename = self.get_output_filename(src_file, self.config)
+        dst_file = os.path.join(dst_folder, output_filename)
         if not self.can_replace(dst_file):
             return False
         with wand.image.Image(filename=src_file) as img:
@@ -70,8 +74,19 @@ class Cropper:
             img.save(filename=dst_file)
         return True
 
-    def copy(self, src_file, dst_file):
+    def copy(self, src_file, dst_folder):
+        output_filename = self.get_output_filename(src_file, self.config)
+        dst_file = os.path.join(dst_folder, output_filename)
         if not self.can_replace(dst_file):
             return False
         shutil.copy(src_file, dst_file)
         return True
+
+    @staticmethod
+    def get_output_filename(input_filename, config):
+        cropall_config = config["cropall"]
+        basename, ext = os.path.splitext(os.path.basename(input_filename))
+        if cropall_config.getboolean("append_suffix"):
+            suffix = cropall_config.get("output_suffix", "-crop")
+            basename += suffix
+        return basename + ext

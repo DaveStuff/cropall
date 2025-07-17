@@ -241,13 +241,15 @@ class App(ThemedTk):
 
         logger.warning("Checking for existing crops")
         self.current = 0
-        while self.current < len(self.images) and os.path.exists(
-            os.path.join(self.output_folder, self.images[self.current])
-        ):
-            logger.warning(
-                "Skipping " + self.images[self.current] + ". Already cropped."
-            )
-            self.current += 1
+        while self.current < len(self.images):
+            output_filename = type(cropper).get_output_filename(self.images[self.current], self.configfile)
+            if os.path.exists(os.path.join(self.output_folder, output_filename)):
+                logger.warning(
+                    "Skipping " + self.images[self.current] + ". Already cropped."
+                )
+                self.current += 1
+            else:
+                break
 
         # Trigger a resize to set self.display_area
         self.display_area = box.Size2D(-1, -1)
@@ -317,13 +319,13 @@ class App(ThemedTk):
 
     def copy_next(self):
         if self.cropper.copy(
-            self.input_folder / self.currentName, self.output_folder / self.currentName
+            self.input_folder / self.currentName, self.output_folder
         ):
             self.next()
 
     def resize_next(self):
         if self.cropper.resize(
-            self.input_folder / self.currentName, self.output_folder / self.currentName
+            self.input_folder / self.currentName, self.output_folder
         ):
             self.next()
 
@@ -331,7 +333,7 @@ class App(ThemedTk):
         box = self.image_crop_box()
         if self.cropper.crop(
             self.input_folder / self.currentName,
-            self.output_folder / self.currentName,
+            self.output_folder,
             box.coords().tolist(),
         ):
             self.next()
@@ -458,6 +460,8 @@ class App(ThemedTk):
         self.focus()
 
     def on_resize(self, event):
+        if not hasattr(self, "display_area"):
+            return
         new_display_area = box.Size2D(self.winfo_width(), self.winfo_height())
         if np.array_equal(self.display_area, new_display_area):
             return

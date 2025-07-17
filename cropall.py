@@ -52,6 +52,10 @@ config.read(default_config_file)
 if os.path.exists(config_file):
     config.read(config_file)
 
+# Forces confirm_overwrite to False if append_suffix is True, regardless of the value in the config file
+if config["cropall"].getboolean("append_suffix"):
+    config["cropper"]["confirm_overwrite"] = "False"
+
 parser = argparse.ArgumentParser()
 parser.add_argument(
     "input_folder",
@@ -73,6 +77,15 @@ def getImages(config, dir):
     logger.info("Found {} images".format(len(images)))
     return images
 
+
+def get_output_filename(input_filename, config):
+    cropall_config = config["cropall"]
+    basename, ext = os.path.splitext(input_filename)
+    if cropall_config.getboolean("append_suffix"):
+        suffix = cropall_config.get("output_suffix", "-crop")
+        basename += suffix
+    return basename + ext
+    
 
 if __name__ == "__main__":
     cropall_config = config["cropall"]
